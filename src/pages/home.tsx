@@ -13,7 +13,10 @@ export default function Home() {
   const fetchDatas = async () => {
     await ApiServices.get('/genre/movie/list').then((data) => setGenreLists(data.genres)).catch(() => { throw new Error('Unable to fetch genres') });
 
-    await ApiServices.get('/movie/popular').then((data)=>setGenreMovies(data.results)).catch(()=>{throw new Error('unable to fetch popular movies')});
+    await ApiServices.get('/movie/top_rated?language=en-US&page=1').then((data)=>{
+      let sortted_by_count = data.results.sort((a:any,b:any)=> b.vote_count - a.vote_count )
+      setGenreMovies(sortted_by_count)
+    }).catch(()=>{throw new Error('unable to fetch top rated movies')});
   }
   useEffect(() => {
     fetchDatas()
@@ -39,7 +42,7 @@ export default function Home() {
         <div className="py-4">
           <ul className="flex items-center flex-wrap gap-2">
             {
-              genreLists.length > 0 &&   <li className={`rounded-full px-3 py-1 text-base font-normal cursor-pointer bg-c1 hover:bg-white hover:text-black ${activeGenre === 'popular' ? 'bg-c3 text-white!' : ''}`}>Popular</li>
+              genreLists.length > 0 &&   <li className={`rounded-full px-3 py-1 text-base font-normal cursor-pointer bg-c1 hover:bg-white hover:text-black ${activeGenre === 'popular' ? 'bg-c3 text-white!' : ''}`}>Top Rated</li>
             }
           
             {genreLists.map((item: any) => (
